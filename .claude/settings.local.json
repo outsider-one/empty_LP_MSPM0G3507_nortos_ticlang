@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/ti -name \"msp.h\" -path \"*/mspm0*\" 2>/dev/null | head -5)",
+      "Read(//c//**)",
+      "Bash(find /c/ti /d/ti \"C:\\\\\\\\ti\" \"C:\\\\\\\\Program Files\\\\\\\\Texas Instruments\" -maxdepth 1 -type d 2>/dev/null | head -10)",
+      "Read(//d//**)",
+      "Bash(xxd)",
+      "Bash(sed -i 's/ENCODERA_INT_IRQN/GPIO_MULTIPLE_GPIOA_INT_IRQN/g' empty.c)",
+      "Bash(sed -i 's/ENCODERB_INT_IRQN/ENCODERB_GPIOB_INT_IRQN/g' empty.c)",
+      "Read(//d/AAA__Workspace/CCS/**)"
+    ]
+  }
+}
