@@ -10,6 +10,8 @@ int16_t AX,AY,AZ,GX,GY,GZ;
 uint8_t sensor;
 signed char Error=0;
 
+uint8_t MPUID;
+
 unsigned char system=1;
 
 /* ============================================================
@@ -44,18 +46,19 @@ int main(void)
     NVIC_ClearPendingIRQ(TIMER_0_INST_INT_IRQN);
     NVIC_EnableIRQ(TIMER_0_INST_INT_IRQN);
     OLED_Init();
-
+	MPU6050_Init();
    
 
     while (1)
     {
-		OLED_ShowString(0, 0, (const uint8_t *)"OK");
-        OLED_Refresh_Gram();
-        /* KEY=PB21: 按下=ON, 松手=OFF */
-        if (DL_GPIO_readPins(KEY_PORT, KEY_key_PIN) == 0)
-            LED_ON();
-        else
-            LED_OFF();
+		MPUID = MPU6050_GetID();
+		for(int i=0;i<4;i++) 
+		{
+			OLED_ShowChar(0+i*8,0,MPUID>>4,16,1);
+			OLED_Refresh_Gram();
+		}
+        
+        
     }
 }
 

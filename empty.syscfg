@@ -107,11 +107,14 @@ GPIO6.associatedPins[1].pin.$assign       = "PA27";
 GPIO7.port                          = "PORTA";
 GPIO7.$name                         = "MPU6050_SCL";
 GPIO7.associatedPins[0].$name       = "PIN_0";
+GPIO7.associatedPins[0].ioStructure = "OD";
 GPIO7.associatedPins[0].pin.$assign = "PA1";
 
 GPIO8.$name                          = "MPU6050_SDA";
 GPIO8.associatedPins[0].$name        = "PIN_1";
 GPIO8.associatedPins[0].assignedPort = "PORTA";
+GPIO8.associatedPins[0].ioStructure  = "OD";
+GPIO8.associatedPins[0].initialValue = "SET";
 GPIO8.associatedPins[0].pin.$assign  = "PA0";
 
 GPIO9.$name                         = "Sensor";
