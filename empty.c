@@ -11,6 +11,7 @@ uint8_t sensor;
 signed char Error=0;
 
 uint8_t MPUID;
+uint8_t word[8]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 unsigned char system=1;
 
@@ -52,13 +53,17 @@ int main(void)
     while (1)
     {
 		MPUID = MPU6050_GetID();
-		for(int i=0;i<4;i++) 
-		{
-			OLED_ShowChar(0+i*8,0,MPUID>>4,16,1);
-			OLED_Refresh_Gram();
-		}
-        
-        
+
+		/* 8-bit binary */
+		for (int i = 0; i < 8; i++)
+			OLED_ShowChar(i * 16, 0,
+				(MPUID & (0x80 >> i)) ? '1' : '0', 12, 1);
+
+		/* decimal (expect 104 = 0x68) */
+		OLED_ShowString(0, 16, (const uint8_t *)"ID:");
+		OLED_ShowNumber(24, 16, MPUID, 3, 12);
+		OLED_ShowNumber(0,32,1,1,12);
+		OLED_Refresh_Gram();
     }
 }
 
