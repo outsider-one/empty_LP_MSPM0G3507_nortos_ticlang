@@ -50,11 +50,17 @@
 /* 初始化软件 I2C + MPU6050 */
 void MPU6050_Init(void);
 
-/* 读取六轴原始数据 (每个 out 指针指向一个 int16_t) */
+/* 读取六轴数据 (每个 out 指针指向一个 int16_t)
+ *  加速度: cm/s²  (除 100 得 m/s²,  例: 980 = 9.80 m/s²)
+ *  陀螺仪: milli-rad/s (除 1000 得 rad/s, 例: 17 = 0.017 rad/s ≈ 1°/s)
+ */
 void MPU6050_GetData(int16_t *AccX, int16_t *AccY, int16_t *AccZ,
                      int16_t *GyroX, int16_t *GyroY, int16_t *GyroZ);
 
 /* 读取 WHO_AM_I (应为 0x68) */
 uint8_t MPU6050_GetID(void);
+
+/* 直接读取寄存器原始值 (用于调试) */
+uint8_t MPU6050_ReadRawReg(uint8_t reg);
 
 #endif /* _MPU6050_H */

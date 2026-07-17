@@ -10,18 +10,11 @@ int16_t AX,AY,AZ,GX,GY,GZ;
 uint8_t sensor;
 signed char Error=0;
 
-uint8_t MPUID;
-uint8_t word[8]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
-
-unsigned char system=1;
-
-/* ============================================================
- *  TI C Runtime hooks
- * ============================================================ */
+/* TI C Runtime hooks */
 void __mpu_init(void) {}
 void _system_post_cinit(void) {}
 
-/* 灰度传感器读取巡线误差 */
+/* Gray sensor error */
 signed char ERROR_GET()
 {
     signed char Error=0;
@@ -38,6 +31,18 @@ signed char ERROR_GET()
     return Error;
 }
 
+/* signed value → show sign-char + abs(value) at (x,y) */
+static void OLED_ShowSigned(uint8_t x, uint8_t y, int16_t val, uint8_t len, uint8_t size)
+{
+    if (val < 0) {
+        OLED_ShowChar(x, y, '-', size, 1);
+        OLED_ShowNumber(x + size/2, y, (uint32_t)(-val), len, size);
+    } else {
+        OLED_ShowChar(x, y, ' ', size, 1);
+        OLED_ShowNumber(x + size/2, y, (uint32_t)val, len, size);
+    }
+}
+
 int main(void)
 {
     SYSCFG_DL_init();
@@ -47,23 +52,25 @@ int main(void)
     NVIC_ClearPendingIRQ(TIMER_0_INST_INT_IRQN);
     NVIC_EnableIRQ(TIMER_0_INST_INT_IRQN);
     OLED_Init();
-	MPU6050_Init();
-   
+    MPU6050_Init();
 
     while (1)
     {
-		MPUID = MPU6050_GetID();
+        MPU6050_GetData(&AX, &AY, &AZ, &GX, &GY, &GZ);
 
-		/* 8-bit binary */
-		for (int i = 0; i < 8; i++)
-			OLED_ShowChar(i * 16, 0,
-				(MPUID & (0x80 >> i)) ? '1' : '0', 12, 1);
+        /* Line 0: Accel cm/s² (±9999) */
+        OLED_ShowString(0, 0, (const uint8_t *)"A:");     /* title    */
+        OLED_ShowSigned(24, 0, AX, 4, 12);                /* "  -21"  */
+        OLED_ShowSigned(56, 0, AY, 4, 12);
+        OLED_ShowSigned(88, 0, AZ, 4, 12);
 
-		/* decimal (expect 104 = 0x68) */
-		OLED_ShowString(0, 16, (const uint8_t *)"ID:");
-		OLED_ShowNumber(24, 16, MPUID, 3, 12);
-		OLED_ShowNumber(0,32,1,1,12);
-		OLED_Refresh_Gram();
+        /* Line 2: Gyro milli-rad/s (±9999) */
+        OLED_ShowString(0, 16, (const uint8_t *)"G:");
+        OLED_ShowSigned(24,16, GX, 4, 12);
+        OLED_ShowSigned(56,16, GY, 4, 12);
+        OLED_ShowSigned(88,16, GZ, 4, 12);
+
+        OLED_Refresh_Gram();
     }
 }
 

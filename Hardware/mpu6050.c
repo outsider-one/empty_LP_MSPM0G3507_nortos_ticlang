@@ -185,32 +185,39 @@ uint8_t MPU6050_GetID(void)
     return MPU_ReadReg(MPU6050_WHO_AM_I);
 }
 
+uint8_t MPU6050_ReadRawReg(uint8_t reg)
+{
+    return MPU_ReadReg(reg);
+}
+
 void MPU6050_GetData(int16_t *AccX, int16_t *AccY, int16_t *AccZ,
                      int16_t *GyroX, int16_t *GyroY, int16_t *GyroZ)
 {
-    uint8_t DataH, DataL;
+    int16_t raw;
 
-    DataH = MPU_ReadReg(MPU6050_ACCEL_XOUT_H);
-    DataL = MPU_ReadReg(MPU6050_ACCEL_XOUT_L);
-    *AccX = (int16_t)((DataH << 8) | DataL);
+    /* ── 加速度 cm/s²: raw / 2048 * 980 = raw * 245 / 512 ── */
+    raw = (int16_t)((MPU_ReadReg(MPU6050_ACCEL_XOUT_H) << 8) |
+                     MPU_ReadReg(MPU6050_ACCEL_XOUT_L));
+    *AccX = (int16_t)((int32_t)raw * 245 / 512);
 
-    DataH = MPU_ReadReg(MPU6050_ACCEL_YOUT_H);
-    DataL = MPU_ReadReg(MPU6050_ACCEL_YOUT_L);
-    *AccY = (int16_t)((DataH << 8) | DataL);
+    raw = (int16_t)((MPU_ReadReg(MPU6050_ACCEL_YOUT_H) << 8) |
+                     MPU_ReadReg(MPU6050_ACCEL_YOUT_L));
+    *AccY = (int16_t)((int32_t)raw * 245 / 512);
 
-    DataH = MPU_ReadReg(MPU6050_ACCEL_ZOUT_H);
-    DataL = MPU_ReadReg(MPU6050_ACCEL_ZOUT_L);
-    *AccZ = (int16_t)((DataH << 8) | DataL);
+    raw = (int16_t)((MPU_ReadReg(MPU6050_ACCEL_ZOUT_H) << 8) |
+                     MPU_ReadReg(MPU6050_ACCEL_ZOUT_L));
+    *AccZ = (int16_t)((int32_t)raw * 245 / 512);
 
-    DataH = MPU_ReadReg(MPU6050_GYRO_XOUT_H);
-    DataL = MPU_ReadReg(MPU6050_GYRO_XOUT_L);
-    *GyroX = (int16_t)((DataH << 8) | DataL);
+    /* ── 角速度 milli-rad/s: raw / 16.4 * π/180 * 1000 = raw * 213 / 200 ── */
+    raw = (int16_t)((MPU_ReadReg(MPU6050_GYRO_XOUT_H) << 8) |
+                     MPU_ReadReg(MPU6050_GYRO_XOUT_L));
+    *GyroX = (int16_t)((int32_t)raw * 213 / 200);
 
-    DataH = MPU_ReadReg(MPU6050_GYRO_YOUT_H);
-    DataL = MPU_ReadReg(MPU6050_GYRO_YOUT_L);
-    *GyroY = (int16_t)((DataH << 8) | DataL);
+    raw = (int16_t)((MPU_ReadReg(MPU6050_GYRO_YOUT_H) << 8) |
+                     MPU_ReadReg(MPU6050_GYRO_YOUT_L));
+    *GyroY = (int16_t)((int32_t)raw * 213 / 200);
 
-    DataH = MPU_ReadReg(MPU6050_GYRO_ZOUT_H);
-    DataL = MPU_ReadReg(MPU6050_GYRO_ZOUT_L);
-    *GyroZ = (int16_t)((DataH << 8) | DataL);
+    raw = (int16_t)((MPU_ReadReg(MPU6050_GYRO_ZOUT_H) << 8) |
+                     MPU_ReadReg(MPU6050_GYRO_ZOUT_L));
+    *GyroZ = (int16_t)((int32_t)raw * 213 / 200);
 }
